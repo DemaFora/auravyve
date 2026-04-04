@@ -1,0 +1,1509 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#09090D">
+<title>AuraVyve</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #09090D;
+  --indigo: #111427;
+  --plum: #1B1330;
+  --charcoal: #18181F;
+  --glass: rgba(255,255,255,0.06);
+  --glass-strong: rgba(255,255,255,0.10);
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #F5F7FB;
+  --text-2: #B8C0D4;
+  --muted: #7C859B;
+  --violet: #8B5CF6;
+  --blue: #38BDF8;
+  --cyan: #22D3EE;
+  --green: #34D399;
+  --gold: #FACC15;
+  --orange: #FB923C;
+  --pink: #F472B6;
+  --red: #F87171;
+  --grad: linear-gradient(135deg, #8B5CF6, #38BDF8);
+  --grad-cosmic: linear-gradient(135deg, #1B1330, #2C1F52, #111427);
+  --grad-reveal: linear-gradient(135deg, #22D3EE, #8B5CF6, #F472B6);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; }
+body { height: 100%; color: var(--text); font-family: 'Inter', system-ui, sans-serif; overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 10%, rgba(139,92,246,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 90%, rgba(56,189,248,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 70% at 50% 50%, rgba(244,114,182,0.12) 0%, transparent 65%),
+    #09090D;
+}
+
+h1, h2, h3, .sora { font-family: 'Sora', system-ui, sans-serif; }
+
+#app { height: 100%; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; position: relative; z-index: 2; background: transparent; }
+
+/* â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#auth-screen {
+  flex: 1; display: none; flex-direction: column; align-items: center;
+  justify-content: center; padding: 32px 24px; gap: 10px;
+  background: transparent;
+}
+#auth-screen.visible { display: flex; }
+.auth-orb { width: 90px; height: 90px; border-radius: 50%; background: var(--grad); box-shadow: 0 0 60px rgba(139,92,246,0.5), 0 0 120px rgba(139,92,246,0.2); animation: pulse 3s ease-in-out infinite; margin-bottom: 8px; }
+@keyframes pulse { 0%,100%{transform:scale(1);box-shadow:0 0 60px rgba(139,92,246,.5),0 0 120px rgba(139,92,246,.2)} 50%{transform:scale(1.06);box-shadow:0 0 80px rgba(139,92,246,.7),0 0 160px rgba(139,92,246,.3)} }
+.auth-logo { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.auth-sub { color: var(--muted); font-size: 14px; text-align: center; margin-bottom: 12px; line-height: 1.5; }
+.auth-panel { width: 100%; background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; border: 1px solid var(--border-strong); display: flex; flex-direction: column; gap: 12px; }
+.auth-panel h2 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; }
+input[type=text], input[type=password] { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; color: var(--text); font-size: 15px; font-family: 'Inter', sans-serif; outline: none; transition: border .2s; }
+input:focus { border-color: var(--violet); background: rgba(139,92,246,0.08); }
+.btn-primary { width: 100%; background: var(--grad); color: #fff; border: none; border-radius: 16px; padding: 15px; font-size: 15px; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; box-shadow: 0 4px 24px rgba(139,92,246,0.35); transition: opacity .15s, transform .1s; }
+.btn-primary:active { opacity: .85; transform: scale(.98); }
+.auth-switch { text-align: center; font-size: 13px; color: var(--muted); }
+.auth-switch span { color: var(--violet); cursor: pointer; font-weight: 600; }
+.error-msg { color: var(--red); font-size: 13px; text-align: center; min-height: 18px; }
+
+/* â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#main-app { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+#main-app.visible { display: flex; }
+.content-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 16px 96px; }
+.content-area::-webkit-scrollbar { display: none; }
+
+/* â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(17,20,39,0.92); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom); z-index: 100; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 8px; gap: 4px; background: none; border: none; color: var(--muted); font-size: 10px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: color .15s; }
+.nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: filter .15s; }
+.nav-btn.active { color: var(--violet); }
+.nav-btn.active svg { filter: drop-shadow(0 0 6px rgba(139,92,246,0.8)); }
+
+/* â”€â”€ Glass card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.card { background: rgba(13,23,40,0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 24px; border: 1px solid var(--border); padding: 20px; margin-bottom: 14px; }
+.card-label { font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 14px; font-family: 'Inter', sans-serif; }
+
+/* â”€â”€ Vyve orb / home â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.home-hero { display: flex; flex-direction: column; align-items: center; padding: 28px 0 20px; gap: 8px; position: relative; }
+.home-hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 280px; height: 280px; border-radius: 50%; background: var(--vyve-color, var(--grad)); opacity: .12; filter: blur(50px); pointer-events: none; animation: ambientOrb 6s ease-in-out infinite; }
+@keyframes ambientOrb { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.12)} }
+.orb-wrap { position: relative; width: 160px; height: 160px; }
+.orb { width: 160px; height: 160px; border-radius: 50%; background: var(--vyve-color, var(--grad)); box-shadow: 0 0 60px var(--vyve-glow, rgba(139,92,246,0.6)), 0 0 120px var(--vyve-glow2, rgba(56,189,248,0.3)); animation: orbFloat 4s ease-in-out infinite; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+@keyframes orbFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.orb-score { font-family: 'Sora', sans-serif; font-size: 48px; font-weight: 800; color: #fff; line-height: 1; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+.orb-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.75); letter-spacing: 0.5px; }
+.vyve-name { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; text-align: center; }
+.vyve-tagline { font-size: 13px; color: var(--text-2); text-align: center; line-height: 1.5; max-width: 260px; }
+.score-pills { display: flex; gap: 10px; }
+.score-pill { background: var(--glass-strong); border: 1px solid var(--border); border-radius: 20px; padding: 8px 16px; text-align: center; }
+.score-pill-val { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--violet); }
+.score-pill-lbl { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+/* â”€â”€ Traits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.traits { display: grid; gap: 10px; }
+.trait { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; }
+.trait-top { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+.bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
+.fill { height: 100%; border-radius: 999px; background: var(--grad); transition: width .6s ease; box-shadow: 0 0 8px rgba(139,92,246,.5); }
+
+/* â”€â”€ Challenges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.ch-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.ch-progress { font-size: 12px; color: var(--muted); }
+.ch-progress strong { color: var(--cyan); }
+.ch-item { background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.18); border-radius: 20px; padding: 16px; margin-bottom: 12px; transition: opacity .2s; }
+.ch-item.done { opacity: .5; }
+.ch-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.ch-name { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; }
+.ch-vyve-pill { background: rgba(34,211,238,.12); color: var(--cyan); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.ch-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 12px; }
+.ch-btn { width: 100%; background: var(--grad); color: #fff; border: none; border-radius: 14px; padding: 12px; font-size: 13px; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; box-shadow: 0 4px 16px rgba(139,92,246,.3); transition: opacity .15s; }
+.ch-btn.done { background: rgba(255,255,255,.07); color: var(--muted); box-shadow: none; cursor: default; }
+
+/* â”€â”€ Score card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.card-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+#scorecard { width: 100%; max-width: 360px; background: linear-gradient(135deg, #1B1330 0%, #2C1F52 50%, #0f1a3a 100%); border-radius: 28px; padding: 28px 24px; border: 1px solid rgba(139,92,246,.3); box-shadow: 0 0 60px rgba(139,92,246,.2); position: relative; overflow: hidden; }
+#scorecard::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,.3) 0%, transparent 70%); }
+#scorecard::after { content: ''; position: absolute; bottom: -30px; left: -30px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, rgba(56,189,248,.2) 0%, transparent 70%); }
+.sc-brand { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
+.sc-score-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 4px; }
+.sc-score { font-family: 'Sora', sans-serif; font-size: 64px; font-weight: 800; background: var(--grad-reveal); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+.sc-vyve-name { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.sc-username { font-size: 13px; color: rgba(255,255,255,.45); margin-bottom: 20px; }
+.sc-traits { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; z-index: 1; }
+.sc-trait { background: rgba(255,255,255,.06); border-radius: 12px; padding: 10px 12px; }
+.sc-trait-name { font-size: 10px; color: rgba(255,255,255,.35); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.sc-trait-val { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
+.sc-footer { margin-top: 20px; text-align: center; font-size: 11px; color: rgba(255,255,255,.2); letter-spacing: 1px; position: relative; z-index: 1; }
+.sc-streak { text-align: center; font-size: 13px; color: var(--muted); margin-top: 12px; }
+.sc-streak strong { color: var(--gold); }
+.share-hint { font-size: 12px; color: var(--muted); text-align: center; }
+.btn-secondary { background: var(--glass-strong); color: var(--text); border: 1px solid var(--border); border-radius: 14px; padding: 12px 20px; font-size: 13px; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; width: 100%; max-width: 360px; transition: background .15s; }
+.btn-secondary:active { background: rgba(255,255,255,.14); }
+
+/* â”€â”€ Leaderboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.lb-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.lb-tab { flex: 1; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 12px; padding: 9px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; text-align: center; font-family: 'Sora', sans-serif; transition: all .15s; }
+.lb-tab.active { background: rgba(139,92,246,.15); border-color: rgba(139,92,246,.5); color: var(--violet); }
+.lb-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; }
+.lb-row.you { background: rgba(139,92,246,.1); border-color: rgba(139,92,246,.3); }
+.lb-rank { width: 26px; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 800; color: var(--muted); text-align: center; flex-shrink: 0; }
+.lb-rank.gold { color: var(--gold); }
+.lb-rank.silver { color: #a0a8c0; }
+.lb-rank.bronze { color: var(--orange); }
+.lb-info { flex: 1; }
+.lb-name { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; }
+.lb-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.lb-score { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* â”€â”€ Community â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.search-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.search-row input { flex: 1; }
+.btn-sm { background: var(--grad); color: #fff; border: none; border-radius: 12px; padding: 0 18px; font-size: 13px; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; white-space: nowrap; height: 48px; }
+.result-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+.result-name { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; }
+.result-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.btn-add { background: rgba(139,92,246,.15); color: var(--violet); border: 1px solid rgba(139,92,246,.3); border-radius: 10px; padding: 6px 14px; font-size: 12px; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; transition: background .15s; }
+.btn-add:hover { background: rgba(139,92,246,.25); }
+.req-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+.req-btns { display: flex; gap: 6px; }
+.btn-accept { background: var(--green); color: #000; border: none; border-radius: 10px; padding: 6px 14px; font-size: 12px; font-weight: 800; font-family: 'Sora', sans-serif; cursor: pointer; }
+.btn-decline { background: rgba(248,113,113,.12); color: var(--red); border: 1px solid rgba(248,113,113,.2); border-radius: 10px; padding: 6px 14px; font-size: 12px; font-weight: 700; font-family: 'Sora', sans-serif; cursor: pointer; }
+.friend-row { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+.friend-name { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; flex: 1; }
+.section-head { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin: 16px 0 10px; }
+.feed-item { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+.feed-user { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.feed-msg { font-size: 13px; color: var(--text-2); margin-top: 3px; }
+.feed-time { font-size: 11px; color: rgba(255,255,255,.2); margin-top: 5px; }
+
+/* â”€â”€ Badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.badge-chip { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 16px; padding: 14px 8px; text-align: center; }
+.badge-chip.earned { background: rgba(250,204,21,.07); border-color: rgba(250,204,21,.25); }
+.badge-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--grad); margin: 0 auto 8px; box-shadow: 0 0 12px rgba(139,92,246,.5); }
+.badge-chip.earned .badge-dot { background: linear-gradient(135deg, var(--gold), var(--orange)); box-shadow: 0 0 12px rgba(250,204,21,.4); }
+.badge-name { font-size: 10px; font-weight: 700; color: var(--muted); line-height: 1.3; }
+.badge-chip.earned .badge-name { color: var(--gold); }
+
+/* â”€â”€ Profile / logout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.btn-ghost { background: rgba(255,255,255,.05); color: var(--text-2); border: 1px solid var(--border); border-radius: 14px; padding: 12px; font-size: 13px; font-weight: 600; font-family: 'Sora', sans-serif; cursor: pointer; width: 100%; text-align: center; }
+
+/* â”€â”€ Check-in â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+#checkin-modal { position: fixed; inset: 0; background: rgba(9,9,13,0.92); backdrop-filter: blur(12px); z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+#checkin-modal.visible { display: flex; }
+.ci-card { width: 100%; max-width: 440px; background: var(--glass-strong); border: 1px solid var(--border-strong); border-radius: 28px; padding: 28px 24px; }
+.ci-step-label { font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
+.ci-question { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 22px; line-height: 1.3; }
+.ci-options { display: grid; gap: 10px; }
+.ci-opt { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 14px; padding: 13px 16px; font-size: 14px; font-weight: 600; color: var(--text-2); cursor: pointer; font-family: 'Inter', sans-serif; text-align: left; transition: all .15s; }
+.ci-opt:active, .ci-opt.selected { background: rgba(139,92,246,.15); border-color: rgba(139,92,246,.5); color: var(--text); }
+.ci-progress { display: flex; gap: 6px; margin-bottom: 20px; }
+.ci-dot { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.1); }
+.ci-dot.done { background: var(--violet); }
+.ci-dot.active { background: var(--cyan); }
+
+/* â”€â”€ Progression / unlocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.prog-banner { background: linear-gradient(135deg, rgba(139,92,246,.15), rgba(56,189,248,.1)); border: 1px solid rgba(139,92,246,.25); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+.prog-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--grad); flex-shrink: 0; }
+.prog-text .title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; }
+.prog-text .sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.locked-card { background: rgba(255,255,255,.02); border: 1px dashed rgba(255,255,255,.1); border-radius: 18px; padding: 18px; text-align: center; margin-bottom: 14px; }
+.locked-card .lock-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+.locked-card .lock-sub { font-size: 12px; color: rgba(255,255,255,.2); }
+.weekly-story { background: linear-gradient(135deg, rgba(34,211,238,.08), rgba(139,92,246,.08)); border: 1px solid rgba(34,211,238,.2); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+.weekly-story .ws-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--cyan); }
+.weekly-story .ws-text { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.weekly-story .ws-scores { display: flex; gap: 6px; margin-top: 12px; align-items: flex-end; height: 32px; }
+.ws-bar { flex: 1; border-radius: 3px; background: var(--grad); opacity: .7; }
+.archetype-card { background: linear-gradient(135deg, rgba(250,204,21,.08), rgba(251,146,60,.06)); border: 1px solid rgba(250,204,21,.2); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+.archetype-card .at-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--gold); margin-bottom: 6px; }
+.archetype-card .at-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.insight-row { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+.insight-row .ins-label { font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+.insight-row .ins-text { font-size: 14px; color: var(--text); line-height: 1.5; font-family: 'Sora', sans-serif; }
+.shield-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+.shield-pip { width: 10px; height: 10px; border-radius: 50%; background: var(--violet); box-shadow: 0 0 8px rgba(139,92,246,.5); }
+.shield-pip.used { background: rgba(255,255,255,.1); box-shadow: none; }
+
+/* â”€â”€ Collection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.lib-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.lib-pct { background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: var(--violet); }
+.col-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+.col-card { border-radius: 18px; padding: 14px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; min-height: 80px; justify-content: center; }
+.col-card.found { border-color: rgba(255,255,255,.15); }
+.col-card.locked { background: rgba(255,255,255,.02); border-style: dashed; }
+.col-card.rare-found { border-width: 1.5px; }
+.col-name { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; }
+.col-locked-name { font-size: 11px; color: var(--muted); }
+.col-orb { width: 32px; height: 32px; border-radius: 50%; }
+.hint-row { background: rgba(34,211,238,.07); border: 1px solid rgba(34,211,238,.2); border-radius: 14px; padding: 12px 16px; font-size: 13px; color: var(--text-2); margin-bottom: 14px; }
+.hint-row strong { color: var(--cyan); }
+
+/* â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.toast { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%); background: var(--green); color: #000; padding: 9px 22px; border-radius: 20px; font-size: 13px; font-weight: 800; font-family: 'Sora', sans-serif; opacity: 0; pointer-events: none; transition: opacity .2s; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<canvas id="lava"></canvas><div id="app">
+
+
+<!-- Landing -->
+<div id="landing-screen" style="display:none;flex:1;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:1">
+
+  <!-- Hero -->
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px 32px;text-align:center;background:radial-gradient(ellipse 100% 60% at 50% -10%,rgba(139,92,246,0.3) 0%,transparent 65%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(56,189,248,0.12) 0%,transparent 60%),#09090D;position:relative;">
+
+    <style>
+    .ls-wrap { position:relative; width:320px; height:320px; margin:0 auto 28px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .ls-orb { position:absolute; top:50%; left:50%; width:160px; height:160px; border-radius:50%; margin-top:-80px; margin-left:-80px; background:linear-gradient(135deg,#8B5CF6,#6C63FF,#38BDF8); box-shadow:0 0 80px rgba(139,92,246,.8),0 0 160px rgba(139,92,246,.3); animation:orbFloat 4s ease-in-out infinite; }
+    .ls-ring { position:absolute; top:0; left:0; right:0; bottom:0; border-radius:50%; border:1px solid rgba(139,92,246,.2); margin:auto; }
+    .ls-ring-1 { width:220px; height:220px; animation:ringPulse2 4s ease-in-out infinite; }
+    .ls-ring-2 { width:300px; height:300px; animation:ringPulse2 4s ease-in-out infinite .8s; }
+    .ls-dot { position:absolute; top:50%; left:50%; width:1px; height:1px; transform-origin:0 0; }
+    .ls-dot span { position:absolute; border-radius:50%; display:block; }
+    .ls-d1 { animation:lsorbit 7s linear infinite; } .ls-d1 span { width:14px;height:14px;top:-7px;background:#8B5CF6;box-shadow:0 0 16px rgba(139,92,246,1); }
+    .ls-d2 { animation:lsorbit 10s linear infinite .5s; } .ls-d2 span { width:12px;height:12px;top:-6px;background:#F472B6;box-shadow:0 0 16px rgba(244,114,182,1); }
+    .ls-d3 { animation:lsorbit 8s linear infinite 1.2s; } .ls-d3 span { width:10px;height:10px;top:-5px;background:#22D3EE;box-shadow:0 0 16px rgba(34,211,238,1); }
+    .ls-d4 { animation:lsorbit 12s linear infinite .3s; } .ls-d4 span { width:13px;height:13px;top:-6.5px;background:#FACC15;box-shadow:0 0 16px rgba(250,204,21,1); }
+    .ls-d5 { animation:lsorbit 9s linear infinite .9s; } .ls-d5 span { width:11px;height:11px;top:-5.5px;background:#34D399;box-shadow:0 0 16px rgba(52,211,153,1); }
+    .ls-d6 { animation:lsorbit 6s linear infinite 1.8s; } .ls-d6 span { width:10px;height:10px;top:-5px;background:#FB923C;box-shadow:0 0 16px rgba(251,146,60,1); }
+    @keyframes lsorbit { 0%{transform:rotate(0deg) translateX(130px) rotate(0deg)} 100%{transform:rotate(360deg) translateX(130px) rotate(-360deg)} }
+    @keyframes ringPulse2 { 0%,100%{opacity:.15} 50%{opacity:.35} }
+    #lava{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block;}#app{position:relative;z-index:1;}#profile-sheet-modal{z-index:300!important;}#checkin-modal{z-index:200!important;}.toast{z-index:999!important;}
+#pwa-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(56,189,248,0.95));
+  backdrop-filter: blur(20px);
+  padding: 16px 20px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 500;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+#pwa-banner .pwa-text { flex: 1; }
+#pwa-banner .pwa-title { font-family: Sora, sans-serif; font-size: 14px; font-weight: 700; color: #fff; }
+#pwa-banner .pwa-sub { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+#pwa-banner .pwa-btn { background: #fff; color: #6C63FF; border: none; border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 800; cursor: pointer; font-family: Sora, sans-serif; white-space: nowrap; }
+#pwa-banner .pwa-close { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
+#ios-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(13,23,40,0.98);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(139,92,246,0.4);
+  padding: 18px 20px 28px;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 500;
+}
+#ios-banner .ios-title { font-family: Sora, sans-serif; font-size: 15px; font-weight: 700; color: #fff; }
+#ios-banner .ios-steps { font-size: 13px; color: #B8C0D4; line-height: 1.7; }
+#ios-banner .ios-close { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; color: #8a9ab0; font-size: 13px; cursor: pointer; font-family: Inter, sans-serif; text-align: center; }
+</style>
+    <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding-top:24px">
+    <div class="ls-wrap">
+      <div class="ls-ring ls-ring-1"></div>
+      <div class="ls-ring ls-ring-2"></div>
+      <div class="ls-orb"></div>
+      <div class="ls-dot ls-d1"><span></span></div>
+      <div class="ls-dot ls-d2"><span></span></div>
+      <div class="ls-dot ls-d3"><span></span></div>
+      <div class="ls-dot ls-d4"><span></span></div>
+      <div class="ls-dot ls-d5"><span></span></div>
+      <div class="ls-dot ls-d6"><span></span></div>
+    </div>
+    <div style="width:100%;max-width:360px;text-align:center">
+      <div style="font-family:Sora,sans-serif;font-size:42px;font-weight:900;background:linear-gradient(135deg,#8B5CF6,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:6px">AuraVyve</div>
+      <div style="font-family:Sora,sans-serif;font-size:18px;font-weight:600;color:#B8C0D4;margin-bottom:28px;line-height:1.4">What color is your energy today?</div>
+
+      <!-- Feature pills -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px">
+        <div style="background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#A78BFA">Daily check-in</div>
+        <div style="background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#22D3EE">8 vyve colors</div>
+        <div style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#F472B6">6 rare auras</div>
+        <div style="background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#FACC15">Streak rewards</div>
+        <div style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#34D399">Friend compare</div>
+        <div style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#FB923C">8 archetypes</div>
+      </div>
+
+      <button class="btn-primary" onclick="showOnboarding()" style="max-width:320px;font-size:17px;padding:16px">Discover My Vyve</button>
+      <div style="margin-top:16px;font-size:13px;color:#7C859B">Already have an account? <span style="color:#8B5CF6;cursor:pointer;font-weight:600" onclick="skipToAuth()">Sign in</span></div>
+    </div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div style="background:#09090D;padding:40px 28px;">
+    <div style="font-family:Sora,sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:28px">How it works</div>
+    <div style="display:grid;gap:16px">
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#38BDF8);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:14px;font-weight:800;color:#fff">1</div>
+        <div><div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">Check in daily</div><div style="font-size:13px;color:#7C859B;line-height:1.5">Answer 5 quick questions about your mood, energy, and focus. Takes under 20 seconds.</div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#FACC15,#FB923C);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:14px;font-weight:800;color:#fff">2</div>
+        <div><div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">Get your vyve</div><div style="font-size:13px;color:#7C859B;line-height:1.5">Your score maps to a named vyve: Magnetic Violet, Solar Gold, Eclipse Violet. Watch it shift daily.</div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#F472B6,#8B5CF6);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:14px;font-weight:800;color:#fff">3</div>
+        <div><div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">Complete challenges</div><div style="font-size:13px;color:#7C859B;line-height:1.5">Pick 3 daily challenges that fit your day. Build streaks, earn badges, unlock your archetype.</div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#22D3EE,#34D399);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Sora,sans-serif;font-size:14px;font-weight:800;color:#fff">4</div>
+        <div><div style="font-family:Sora,sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">Share your score</div><div style="font-size:13px;color:#7C859B;line-height:1.5">Generate a shareable score card. Compare auras with friends. See who's on the leaderboard.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sample vyve cards -->
+  <div style="background:#09090D;padding:0 28px 40px">
+    <div style="font-family:Sora,sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:20px">What could your vyve be?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);text-align:center">
+        <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:800;color:#fff">Magnetic Violet</div>
+        <div style="font-size:28px;font-weight:900;color:#fff;line-height:1;margin:6px 0">87</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.6)">Confidence 88 · Style 85</div>
+      </div>
+      <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg,#FACC15,#FB923C);text-align:center">
+        <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:800;color:#fff">Solar Gold</div>
+        <div style="font-size:28px;font-weight:900;color:#fff;line-height:1;margin:6px 0">82</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.6)">Social 90 · Confidence 80</div>
+      </div>
+      <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg,#4B0082,#1a0040);text-align:center;border:1px solid rgba(139,92,246,.4)">
+        <div style="font-family:Sora,sans-serif;font-size:11px;font-weight:800;color:#A78BFA;letter-spacing:1px">RARE</div>
+        <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:800;color:#fff">Lunar Static</div>
+        <div style="font-size:28px;font-weight:900;color:#fff;line-height:1;margin:6px 0">79</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5)">Triggered by streak</div>
+      </div>
+      <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg,#1e003a,#8B5CF6,#22D3EE);text-align:center;border:1px solid rgba(139,92,246,.4)">
+        <div style="font-family:Sora,sans-serif;font-size:11px;font-weight:800;color:#22D3EE;letter-spacing:1px">RARE</div>
+        <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:800;color:#fff">Eclipse Violet</div>
+        <div style="font-size:28px;font-weight:900;color:#fff;line-height:1;margin:6px 0">93</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5)">All traits 80+</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final CTA -->
+  <div style="background:linear-gradient(135deg,#1B1330,#0d1728);padding:40px 28px;text-align:center;border-top:1px solid rgba(255,255,255,.06)">
+    <div style="font-family:Sora,sans-serif;font-size:22px;font-weight:800;margin-bottom:10px">Ready to check your vyve?</div>
+    <div style="font-size:14px;color:#7C859B;margin-bottom:24px;line-height:1.5">Free to use. No App Store needed.<br>Just open, check in, and see what you are today.</div>
+    <button class="btn-primary" onclick="showOnboarding()" style="max-width:320px;font-size:17px;padding:16px">Get Started Free</button>
+  </div>
+
+</div>
+
+<!-- Onboarding -->
+<div id="onboarding-screen" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(139,92,246,0.2) 0%,transparent 70%),var(--void)">
+  <div id="ob-slides"></div>
+</div>
+
+<!-- Auth -->
+<div id="auth-screen">
+  <div class="auth-orb"></div>
+  <div class="auth-logo sora">AuraVyve</div>
+  <div class="auth-sub">Discover your vibe.<br>See your vyve. Share your energy.</div>
+
+  <div class="auth-panel" id="reg-panel">
+    <h2>Create Account</h2>
+    <input type="text" id="reg-user" placeholder="Choose a username" maxlength="20" autocomplete="username">
+    <input type="password" id="reg-pass" placeholder="Password (6+ characters)" autocomplete="new-password">
+    <button class="btn-primary" id="btn-register">Start Your Journey</button>
+    <div class="auth-switch">Already have an account? <span id="show-login">Sign in</span></div>
+    <div class="error-msg" id="auth-error"></div>
+  </div>
+
+  <div class="auth-panel" id="login-panel" style="display:none">
+    <h2>Welcome Back</h2>
+    <input type="text" id="login-user" placeholder="Username" autocomplete="username">
+    <input type="password" id="login-pass" placeholder="Password" autocomplete="current-password">
+    <button class="btn-primary" id="btn-login">Check My Vyve</button>
+    <div class="auth-switch">No account? <span id="show-register">Create one</span></div>
+    <div class="error-msg" id="auth-error2"></div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="main-app">
+  <div class="content-area" id="content"></div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="home">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="nav-btn" data-tab="challenges">
+      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Challenges
+    </button>
+    <button class="nav-btn" data-tab="card">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+      Vyve Card
+    </button>
+
+    <button class="nav-btn" data-tab="community" onclick="setTab('community')">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Community
+    </button>
+    <button class="nav-btn" data-tab="history">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      History
+    </button>
+    <button class="nav-btn" data-tab="collection">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Library
+    </button>
+  </nav>
+</div>
+
+<div id="checkin-modal"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let me = null, challenges = [], completedToday = [], leaderboard = { global: [], friends: [] }, lbTab = 'global', activeTab = 'home', feedData = [];
+let checkInQuestions = [], weeklyStory = null, archetype = null, insight = null, collectionData = null;
+let currentEvent = null, retentionMsg = null, historyData = null, patternInsights = null;
+let ciAnswers = {}, ciStep = 0, ciJournal = '';
+
+// â”€â”€ Vyve naming system â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const VYVE_NAMES = [
+  { name: 'Magnetic Violet', color: 'linear-gradient(135deg,#8B5CF6,#6D28D9)', glow: 'rgba(139,92,246,0.6)', glow2: 'rgba(109,40,217,0.3)', tagline: "Your energy is impossible to ignore right now.", minScore: 85 },
+  { name: 'Solar Gold', color: 'linear-gradient(135deg,#FACC15,#FB923C)', glow: 'rgba(250,204,21,0.6)', glow2: 'rgba(251,146,60,0.3)', tagline: "You're radiating warmth and confidence today.", minScore: 80 },
+  { name: 'Mystic Blue', color: 'linear-gradient(135deg,#38BDF8,#0EA5E9)', glow: 'rgba(56,189,248,0.6)', glow2: 'rgba(14,165,233,0.3)', tagline: "Calm, clear-headed, and unusually perceptive.", minScore: 74 },
+  { name: 'Velvet Violet', color: 'linear-gradient(135deg,#A78BFA,#8B5CF6)', glow: 'rgba(167,139,250,0.6)', glow2: 'rgba(139,92,246,0.3)', tagline: "Deeply intuitive and magnetically present.", minScore: 68 },
+  { name: 'Spirit Cyan', color: 'linear-gradient(135deg,#22D3EE,#06B6D4)', glow: 'rgba(34,211,238,0.6)', glow2: 'rgba(6,182,212,0.3)', tagline: "Your vibe is unusually clear and electric today.", minScore: 62 },
+  { name: 'Ember Orange', color: 'linear-gradient(135deg,#FB923C,#EF4444)', glow: 'rgba(251,146,60,0.6)', glow2: 'rgba(239,68,68,0.3)', tagline: "Fierce energy. Channel it into something.", minScore: 55 },
+  { name: 'Balance Green', color: 'linear-gradient(135deg,#34D399,#10B981)', glow: 'rgba(52,211,153,0.6)', glow2: 'rgba(16,185,129,0.3)', tagline: "Grounded and steady. A calming presence.", minScore: 48 },
+  { name: 'Pulse Pink', color: 'linear-gradient(135deg,#F472B6,#EC4899)', glow: 'rgba(244,114,182,0.6)', glow2: 'rgba(236,72,153,0.3)', tagline: "Warm, social, and open to connection.", minScore: 0 }
+];
+
+function getAura(score) {
+  for (const a of VYVE_NAMES) if (score >= a.minScore) return a;
+  return VYVE_NAMES[VYVE_NAMES.length - 1];
+}
+
+function calcScore(t) { return Math.round((t.confidence + t.style + t.discipline + t.social) / 4); }
+
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+async function api(path, method = 'GET', body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  return r.json();
+}
+
+// â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function render() {
+  const c = document.getElementById('content');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', (b.dataset.tab === activeTab || (b.dataset.tab === 'community' && activeTab === 'leaderboard'))));
+  if (activeTab === 'home') c.innerHTML = renderHome();
+  else if (activeTab === 'challenges') c.innerHTML = renderChallenges();
+  else if (activeTab === 'card') c.innerHTML = renderCard();
+  else if (activeTab === 'leaderboard') c.innerHTML = renderLeaderboard();
+  else if (activeTab === 'community') c.innerHTML = renderCommunity();
+  else if (activeTab === 'collection') c.innerHTML = renderCollection();
+  else if (activeTab === 'history') c.innerHTML = renderHistory();
+  bindEvents();
+}
+
+// â”€â”€ Check-in modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function openCheckIn() {
+  ciAnswers = {}; ciStep = 0;
+  const modal = document.getElementById('checkin-modal');
+  modal.classList.add('visible');
+  renderCheckInStep();
+}
+function closeCheckIn() {
+  document.getElementById('checkin-modal').classList.remove('visible');
+}
+function renderCheckInStep() {
+  const q = checkInQuestions[ciStep];
+  const modal = document.getElementById('checkin-modal');
+  const dots = checkInQuestions.map((_, i) => `<div class="ci-dot${i < ciStep ? ' done' : i === ciStep ? ' active' : ''}"></div>`).join('');
+  // Last step = journal
+  const isJournalStep = ciStep === checkInQuestions.length;
+  if (isJournalStep) {
+    modal.innerHTML = `
+      <div class="ci-card">
+        <div class="ci-progress">${checkInQuestions.map((_,i) => `<div class="ci-dot done"></div>`).join('')}<div class="ci-dot active"></div></div>
+        <div class="ci-step-label">Optional</div>
+        <div class="ci-question">Describe your day in a few words.</div>
+        <textarea id="ci-journal" style="width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:14px;padding:14px;color:var(--text);font-size:14px;font-family:Inter,sans-serif;resize:none;min-height:90px;outline:none" placeholder="Busy, distracted, gym session, social day..."></textarea>
+        <button class="ch-btn" id="ci-journal-submit" style="margin-top:12px">See My Vyve</button>
+        <button style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;width:100%;margin-top:8px;font-family:Inter,sans-serif" id="ci-journal-skip">Skip</button>
+      </div>`;
+    document.getElementById('ci-journal-submit').addEventListener('click', async () => {
+      ciJournal = document.getElementById('ci-journal').value.trim();
+      closeCheckIn(); await submitCheckIn();
+    });
+    document.getElementById('ci-journal-skip').addEventListener('click', async () => {
+      ciJournal = ''; closeCheckIn(); await submitCheckIn();
+    });
+    return;
+  }
+  modal.innerHTML = `
+    <div class="ci-card">
+      <div class="ci-progress">${dots}</div>
+      <div class="ci-step-label">Step ${ciStep + 1} of ${checkInQuestions.length}</div>
+      <div class="ci-question">${q.label}</div>
+      <div class="ci-options">
+        ${q.options.map((opt, i) => `<button class="ci-opt${ciAnswers[q.id] === i ? ' selected' : ''}" data-val="${i}">${opt}</button>`).join('')}
+      </div>
+    </div>`;
+  modal.querySelectorAll('.ci-opt').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      ciAnswers[q.id] = parseInt(btn.dataset.val);
+      ciStep++;
+      renderCheckInStep();
+    });
+  });
+}
+async function submitCheckIn() {
+  const data = await api('/api/checkin', 'POST', { username: me.username, answers: ciAnswers, journalText: ciJournal });
+  if (data.error) { toast(data.error); return; }
+  me = data.user;
+  if (data.insight) insight = data.insight;
+  if (data.archetype) archetype = data.archetype;
+  // Rare vyve reveal
+  if (data.rareAura) {
+    const r = data.rareAura;
+    const reveal = document.createElement('div');
+    reveal.style.cssText = 'position:fixed;inset:0;background:rgba(9,9,13,0.96);backdrop-filter:blur(16px);z-index:202;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;';
+    reveal.innerHTML = `
+      <div style="font-family:Sora,sans-serif;font-size:11px;font-weight:700;color:#22D3EE;text-transform:uppercase;letter-spacing:2px;margin-bottom:24px">Rare Vyve Detected</div>
+      <div style="width:140px;height:140px;border-radius:50%;background:${r.color};box-shadow:0 0 80px ${r.glow},0 0 160px ${r.glow2};margin:0 auto 24px;animation:orbFloat 3s ease-in-out infinite"></div>
+      <div style="font-family:Sora,sans-serif;font-size:28px;font-weight:800;background:${r.color};-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px;text-align:center">${r.name}</div>
+      <div style="font-size:14px;color:#B8C0D4;text-align:center;max-width:280px;line-height:1.6;margin-bottom:8px">${r.tagline}</div>
+      <div style="font-size:12px;color:#FACC15;font-weight:700;margin-bottom:32px">First discovery!</div>
+      <button onclick="this.parentElement.remove()" style="background:linear-gradient(135deg,#8B5CF6,#38BDF8);color:#fff;border:none;border-radius:16px;padding:14px 32px;font-size:15px;font-weight:700;font-family:Sora,sans-serif;cursor:pointer">Incredible</button>`;
+    document.body.appendChild(reveal);
+    setTimeout(() => { if (document.body.contains(reveal)) reveal.remove(); }, 8000);
+    return;
+  }
+  toast('Vyve updated +5');
+  await refreshLeaderboard();
+  render();
+  // Show result card briefly
+  const score = data.score;
+  const vyve = getAura(score);
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;inset:0;background:rgba(9,9,13,.92);backdrop-filter:blur(12px);z-index:201;display:flex;align-items:center;justify-content:center;padding:24px;';
+  banner.innerHTML = `<div style="text-align:center;">
+    <div style="width:120px;height:120px;border-radius:50%;background:${vyve.color};box-shadow:0 0 80px ${vyve.glow};margin:0 auto 20px;animation:orbFloat 3s ease-in-out infinite"></div>
+    <div style="font-family:Sora,sans-serif;font-size:48px;font-weight:900;color:#fff;line-height:1">${score}</div>
+    <div style="font-family:Sora,sans-serif;font-size:22px;font-weight:700;background:${vyve.color};-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:8px 0">${vyve.name}</div>
+    <div style="font-size:14px;color:var(--text-2);max-width:260px;margin:0 auto 12px;line-height:1.5">${insight?.suggestion || vyve.tagline}</div>
+    ${insight?.bestMode ? `<div style="font-size:12px;color:var(--cyan);max-width:260px;margin:0 auto 6px">Best mode: ${insight.bestMode}</div>` : ''}
+    ${insight?.watchout ? `<div style="font-size:12px;color:rgba(250,204,21,.7);max-width:260px;margin:0 auto 12px">Watchout: ${insight.watchout}</div>` : ''}
+    ${data.journalInterpretation ? `<div style="font-size:12px;color:rgba(255,255,255,.4);max-width:260px;margin:0 auto 12px;font-style:italic">${data.journalInterpretation}</div>` : ''}
+    <button onclick="this.parentElement.parentElement.remove()" style="background:var(--grad);color:#fff;border:none;border-radius:16px;padding:14px 32px;font-size:15px;font-weight:700;font-family:Sora,sans-serif;cursor:pointer">See My Vyve</button>
+  </div>`;
+  document.body.appendChild(banner);
+}
+
+function renderHome() {
+  const score = calcScore(me.traits);
+  const vyve = getAura(score);
+  const auraToday = completedToday.length > 0 ? challenges.filter(c => completedToday.includes(c.id)).reduce((s, c) => s + c.vyve, 0) : 0;
+  const unlocks = me.unlocks || {};
+  const ci = me.checkInCount || 0;
+  const nextUnlock = ci < 3 ? `Check in ${3 - ci} more time${3-ci===1?'':'s'} to unlock Trait Patterns` :
+    ci < 7 ? `${7 - ci} more check-ins to unlock your Weekly Story` :
+    ci < 14 ? `${14 - ci} more to unlock your Archetype` :
+    ci < 30 ? `${30 - ci} more to unlock your Monthly Energy Map` : null;
+
+  return `
+    <div class="home-hero" style="--vyve-color:${vyve.color};--vyve-glow:${vyve.glow};--vyve-glow2:${vyve.glow2}">
+      <div class="orb-wrap">
+        <div class="orb" style="background:${vyve.color};box-shadow:0 0 60px ${vyve.glow},0 0 120px ${vyve.glow2}">
+          <div class="orb-score">${score}</div>
+          <div class="orb-label">VYVE</div>
+        </div>
+      </div>
+      <div class="vyve-name" style="background:${vyve.color};-webkit-background-clip:text;-webkit-text-fill-color:transparent">${vyve.name}</div>
+      <div class="vyve-tagline">${vyve.tagline}</div>
+      <div class="score-pills">
+        <div class="score-pill"><div class="score-pill-val">Lv ${me.level}</div><div class="score-pill-lbl">Level</div></div>
+        <div class="score-pill"><div class="score-pill-val">${me.streak}</div><div class="score-pill-lbl">Streak</div></div>
+        <div class="score-pill"><div class="score-pill-val" style="color:${me.checkInDoneToday?'var(--green)':'var(--cyan)'}">+${auraToday}</div><div class="score-pill-lbl">Today</div></div>
+      </div>
+    </div>
+
+    ${currentEvent ? `
+    <div style="background:linear-gradient(135deg,rgba(250,204,21,.1),rgba(251,146,60,.08));border:1px solid rgba(250,204,21,.2);border-radius:16px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <div style="flex:1">
+        <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;color:var(--gold)">${currentEvent.name}</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:2px">${currentEvent.desc}</div>
+        ${currentEvent.bonus ? `<div style="font-size:11px;color:var(--cyan);margin-top:4px;font-weight:600">${currentEvent.bonus}</div>` : ''}
+      </div>
+    </div>` : ''}
+
+    ${retentionMsg && !me.checkInDoneToday ? `
+    <div style="background:${retentionMsg.type==='winback'||retentionMsg.type==='comeback'?'rgba(250,204,21,.06)':'rgba(139,92,246,.07)'};border:1px solid ${retentionMsg.type==='winback'||retentionMsg.type==='comeback'?'rgba(250,204,21,.2)':'rgba(139,92,246,.18)'};border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--text-2)">${retentionMsg.msg}</div>` : ''}
+
+    ${!me.checkInDoneToday ? `
+    <button class="btn-primary" id="btn-checkin" style="margin-bottom:14px;width:100%;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+      Check In Today
+    </button>` : insight ? `
+    <div class="insight-row">
+      <div class="ins-label">Today's Insight</div>
+      <div class="ins-text">${insight.suggestion}</div>
+      ${insight.bestMode ? `<div style="font-size:12px;color:var(--cyan);margin-top:6px">Best mode: ${insight.bestMode}</div>` : ''}
+      ${insight.watchout ? `<div style="font-size:12px;color:rgba(250,204,21,.7);margin-top:4px">Watchout: ${insight.watchout}</div>` : ''}
+    </div>` : ''}
+
+    ${nextUnlock ? `<div class="prog-banner"><div class="prog-icon"></div><div class="prog-text"><div class="title">Keep going</div><div class="sub">${nextUnlock}</div></div></div>` : ''}
+
+    ${unlocks.archetype && archetype ? `
+    <div class="archetype-card">
+      <div class="at-name">${archetype.name}</div>
+      <div class="at-desc">${archetype.desc}</div>
+    </div>` : ''}
+
+    ${unlocks.weeklyStory && weeklyStory ? `
+    <div class="weekly-story">
+      <div class="ws-title">Weekly Vyve Story</div>
+      <div class="ws-text">${weeklyStory.summary}</div>
+      <div class="ws-scores">${weeklyStory.scores.map(s => `<div class="ws-bar" style="height:${Math.round((s/99)*32)}px"></div>`).join('')}</div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-label">Trait Breakdown</div>
+      <div class="traits">
+        ${['confidence','style','discipline','social'].map(k => `
+          <div class="trait">
+            <div class="trait-top"><span>${k.charAt(0).toUpperCase()+k.slice(1)}</span><strong>${me.traits[k]}</strong></div>
+            <div class="bar"><div class="fill" style="width:${me.traits[k]}%"></div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Vyve Flow</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:10px">${me.streak > 0 ? `Your flow has been active for <strong style="color:var(--gold)">${me.streak} days</strong>. Longest: ${me.longestStreak || me.streak}.` : `Your flow paused. No pressure, check in when you\'re ready.`}</div>
+      <div class="shield-row">
+        ${[0,1].map(i => `<div class="shield-pip${i >= me.streakShields ? ' used' : ''}"></div>`).join('')}
+        <span style="font-size:12px;color:var(--muted)">${me.streakShields}/2 shields left this month</span>
+      </div>
+    </div>
+
+    ${weeklyStory && me.checkInCount >= 7 ? `
+    <div class="weekly-story" style="cursor:pointer" onclick="window.activeTab='home';window.render()">
+      <div class="ws-title">Weekly Story Preview</div>
+      <div class="ws-text" style="font-size:12px">${weeklyStory.summary?.substring(0, 120)}...</div>
+      <div style="font-size:11px;color:var(--cyan);margin-top:8px;font-weight:600">See full story</div>
+    </div>` : ''}
+
+    ${(me.friends||[]).length > 0 ? `
+    <div style="background:rgba(244,114,182,.07);border:1px solid rgba(244,114,182,.2);border-radius:16px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;color:var(--pink);margin-bottom:4px">Friend Activity</div>
+      <div style="font-size:13px;color:var(--text-2)">See how your vyve compares with your circle today.</div>
+      <button onclick="window.activeTab='leaderboard';window.lbTab='friends';window.render()" style="background:none;border:none;color:var(--pink);font-size:12px;font-weight:700;font-family:Sora,sans-serif;cursor:pointer;padding:0;margin-top:8px">Compare auras</button>
+    </div>` : ''}
+
+    ${me.badges && me.badges.length ? `
+    <div class="card">
+      <div class="card-label">Badges</div>
+      <div class="badges-grid">
+        ${me.badges.map(b => `<div class="badge-chip earned"><div class="badge-dot"></div><div class="badge-name">${b.label}</div></div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <button class="btn-ghost" id="btn-logout">Sign Out</button>
+  `;
+}
+
+function renderChallenges() {
+  const selected = me.selectedChallenges || [];
+  const hasSelected = selected.length > 0;
+  const totalAura = selected.reduce((s, id) => { const ch = challenges.find(c=>c.id===id); return s + (ch?.vyve||0); }, 0);
+
+  if (!hasSelected) {
+    // Selection UI
+    let picked = [];
+    return `
+      <div class="card">
+        <div class="ch-header-row">
+          <div class="card-label" style="margin:0">Choose Your Challenges</div>
+          <div class="ch-progress" style="color:var(--cyan)">Pick up to 3</div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Select the challenges that fit your day. Once you lock in, they\'re yours to complete.</div>
+        <div id="ch-pool">
+          ${challenges.map(ch => `
+            <div class="ch-item" id="chpick-${ch.id}" data-pick="${ch.id}" style="cursor:pointer;margin-bottom:10px">
+              <div class="ch-top"><div class="ch-name">${ch.title}</div><div class="ch-vyve-pill">+${ch.vyve} vyve</div></div>
+              <div class="ch-desc">${ch.desc}</div>
+            </div>`).join('')}
+        </div>
+        <button class="btn-primary" id="btn-lock-challenges" style="opacity:.4;margin-top:4px" disabled>Lock In My Challenges</button>
+        <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:8px" id="ch-count-label">0 selected</div>
+      </div>`;
+  }
+
+  // Active challenges UI
+  const myChallenges = challenges.filter(c => selected.includes(c.id));
+  return `
+    <div class="card">
+      <div class="ch-header-row">
+        <div class="card-label" style="margin:0">Today's Challenges</div>
+        <div class="ch-progress"><strong>${completedToday.length}</strong>/${selected.length} complete · +${totalAura} vyve available</div>
+      </div>
+      ${myChallenges.map(ch => {
+        const done = completedToday.includes(ch.id);
+        return `<div class="ch-item${done?' done':''}">
+          <div class="ch-top"><div class="ch-name">${ch.title}</div><div class="ch-vyve-pill">+${ch.vyve} vyve</div></div>
+          <div class="ch-desc">${ch.desc}</div>
+          <button class="ch-btn${done?' done':''}" data-ch="${ch.id}" ${done?'disabled':''}>
+            ${done ? 'Completed today' : 'Complete  +' + ch.vyve + ' vyve'}
+          </button>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderCard() {
+  const score = calcScore(me.traits);
+  const vyve = getAura(score);
+  return `
+    <div class="card-wrap">
+      <div id="scorecard">
+        <div class="sc-brand">AuraVyve</div>
+        <div class="sc-score-row">
+          <div class="sc-score">${score}</div>
+        </div>
+        <div class="sc-vyve-name">${vyve.name}</div>
+        <div class="sc-username">@${me.username} · Level ${me.level}</div>
+        <div class="sc-traits">
+          ${['confidence','style','discipline','social'].map(k => `
+            <div class="sc-trait">
+              <div class="sc-trait-name">${k}</div>
+              <div class="sc-trait-val">${me.traits[k]}</div>
+            </div>`).join('')}
+        </div>
+        <div class="sc-footer">auravyve.app</div>
+      </div>
+      <div class="sc-streak"><strong>${me.streak} day streak</strong> &middot; Longest: ${me.longestStreak || me.streak}</div>
+      <div class="share-hint">Screenshot this card and post your vyve</div>
+      <button class="btn-secondary" id="btn-copy-score">Copy Score to Clipboard</button>
+    </div>
+  `;
+}
+
+function renderLeaderboard() {
+  const list = leaderboard[lbTab] || [];
+  return `
+    <div class="card">
+      <div class="card-label">Rankings</div>
+      <div class="lb-tabs">
+        <button class="lb-tab${lbTab==='global'?' active':''}" data-lbt="global">Global</button>
+        <button class="lb-tab${lbTab==='friends'?' active':''}" data-lbt="friends">Friends</button>
+      </div>
+      ${list.length === 0 ? '<div style="color:var(--muted);font-size:13px;text-align:center;padding:24px 0">No rankings yet</div>' :
+        list.map((u, i) => {
+          const vyve = getAura(u.score);
+          const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+          return `<div class="lb-row${u.username===me.username?' you':''}">
+            <div class="lb-rank${rankClass?' '+rankClass:''}">${i+1}</div>
+            <div style="width:8px;height:8px;border-radius:50%;background:${vyve.color};box-shadow:0 0 6px ${vyve.glow};flex-shrink:0"></div>
+            <div class="lb-info">
+              <div class="lb-name">${u.username===me.username?'You':u.username}</div>
+              <div class="lb-sub">${getAura(u.score).name} &middot; ${u.streak}d streak</div>
+            </div>
+            <div class="lb-score">${u.score}</div>
+          </div>`;
+        }).join('')}
+    </div>
+  `;
+}
+
+function renderCommunity() {
+  const requests = me.friendRequests || [];
+  const friends = me.friends || [];
+  return `
+    
+    <div class="card" style="margin-bottom:14px" id="lb-card">
+      <div class="card-label">Rankings</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button id="lb-global-btn" style="flex:1;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.5);border-radius:10px;padding:8px;font-size:12px;font-weight:700;color:var(--violet);cursor:pointer;font-family:Sora,sans-serif" onclick="switchLb('global')">Global</button>
+        <button id="lb-friends-btn" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:8px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;font-family:Sora,sans-serif" onclick="switchLb('friends')">Friends</button>
+      </div>
+      <div id="lb-list">Loading...</div>
+    </div>
+<div class="card">
+      <div class="card-label">Find People</div>
+      <div class="search-row">
+        <input type="text" id="friend-search" placeholder="Search by username...">
+        <button class="btn-sm" id="btn-search">Search</button>
+      </div>
+      <div id="search-results"></div>
+    </div>
+
+    ${requests.length > 0 ? `<div class="card">
+      <div class="card-label">Friend Requests</div>
+      ${requests.map(f => `<div class="req-row">
+        <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:700">${f}</div>
+        <div class="req-btns">
+          <button class="btn-accept" data-accept="${f}">Accept</button>
+          <button class="btn-decline" data-decline="${f}">Decline</button>
+        </div>
+      </div>`).join('')}
+    </div>` : ''}
+
+    ${friends.length > 0 ? `<div class="card">
+      <div class="card-label">Friends (${friends.length})</div>
+      ${friends.map(f => `<div class="friend-row"><div class="friend-name">${f}</div></div>`).join('')}
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-label">Activity Feed</div>
+      ${feedData.length === 0 ? `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Your energy hasn't been logged yet</div>` :
+        feedData.map(e => `<div class="feed-item">
+          <div class="feed-user">${e.username}</div>
+          <div class="feed-msg">${feedMsg(e)}</div>
+          <div class="feed-time">${timeAgo(e.timestamp)}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+function renderCollection() {
+  const col = collectionData;
+  if (!col) return `<div class="card" style="text-align:center;padding:32px"><div style="color:var(--muted)">Loading...</div></div>`;
+  return `
+    <div class="card">
+      <div class="lib-header">
+        <div class="card-label" style="margin:0">Vyve Library</div>
+        <div class="lib-pct">${col.percentComplete}% complete</div>
+      </div>
+
+      ${col.nextRare ? `<div class="hint-row">Your traits suggest <strong>${col.nextRare.name}</strong> is close</div>` : ''}
+
+      <div class="card-label" style="margin-bottom:10px">Base Auras</div>
+      <div class="col-grid">
+        ${col.baseColors.map(c => c.found ? `
+          <div class="col-card found" style="background:${VYVE_COLORS[c.name]?.color||'var(--glass)'};border-color:rgba(255,255,255,.2)">
+            <div class="col-name" style="color:#fff">${c.name}</div>
+          </div>` : `
+          <div class="col-card locked">
+            <div style="font-size:20px;color:var(--muted)">?</div>
+            <div class="col-locked-name">Undiscovered</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="card-label" style="margin-bottom:10px">Rare Auras</div>
+      <div class="col-grid">
+        ${col.rareAuras.map(r => r.found ? `
+          <div class="col-card rare-found" style="background:${r.color};border-color:rgba(255,255,255,.25)">
+            <div class="col-name" style="color:#fff">${r.name}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.6)">Rare</div>
+          </div>` : `
+          <div class="col-card locked">
+            <div style="font-size:18px;color:var(--muted)">?</div>
+            <div class="col-locked-name">Rare vyve</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderHistory() {
+  const hist = historyData;
+  if (!hist) return `<div class="card" style="text-align:center;padding:32px"><div style="color:var(--muted)">Loading...</div></div>`;
+  const data = hist.last30 || [];
+  const last7 = hist.last7 || [];
+  const patterns = hist.patternInsights || [];
+  const maxScore = Math.max(...data.map(d => d.score||50), 70);
+
+  return `
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="card-label" style="margin:0">Vyve Trend</div>
+        ${hist.dominantAura ? `<div style="font-size:12px;color:var(--muted)">Dominant: <strong style="color:var(--text)">${hist.dominantAura}</strong></div>` : ''}
+      </div>
+
+      ${data.length === 0 ? `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px">Check in for a few days to see your trend</div>` : `
+      <div style="display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:12px">
+        ${data.slice(-21).map(d => {
+          const vyve = getAura(d.score||50);
+          const h = Math.max(8, Math.round(((d.score||50)/99)*80));
+          return `<div title="${d.date}: ${d.score}" style="flex:1;height:${h}px;border-radius:4px 4px 0 0;background:${vyve.color};opacity:.85;min-width:6px"></div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)">
+        <span>${data.slice(-21)[0]?.date?.slice(5)||''}</span>
+        <span>Today</span>
+      </div>`}
+    </div>
+
+    ${patterns.length > 0 ? `
+    <div class="card">
+      <div class="card-label">Why Your Vyve Changes</div>
+      ${patterns.map(p => `
+        <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-2);line-height:1.5">${p}</div>`).join('')}
+    </div>` : ''}
+
+    ${last7.length >= 3 ? `
+    <div class="card">
+      <div class="card-label">Last 7 Days</div>
+      <div style="display:grid;gap:8px">
+        ${last7.map(d => {
+          const vyve = getAura(d.score||50);
+          return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="width:8px;height:8px;border-radius:50%;background:${vyve.color};flex-shrink:0"></div>
+            <div style="flex:1;font-size:12px;color:var(--muted)">${d.date?.slice(5)||d.date}</div>
+            <div style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;background:${vyve.color};-webkit-background-clip:text;-webkit-text-fill-color:transparent">${vyve.name}</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);min-width:28px;text-align:right">${d.score}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-label">Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:rgba(255,255,255,.03);border-radius:14px;padding:12px;text-align:center">
+          <div style="font-family:Sora,sans-serif;font-size:22px;font-weight:800;color:var(--violet)">${hist.totalCheckIns||0}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Total check-ins</div>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border-radius:14px;padding:12px;text-align:center">
+          <div style="font-family:Sora,sans-serif;font-size:22px;font-weight:800;color:var(--gold)">${me.longestStreak||me.streak||0}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Longest streak</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const VYVE_COLORS = {
+  'Magnetic Violet': { color: 'linear-gradient(135deg,#8B5CF6,#6D28D9)' },
+  'Solar Gold': { color: 'linear-gradient(135deg,#FACC15,#FB923C)' },
+  'Mystic Blue': { color: 'linear-gradient(135deg,#38BDF8,#0EA5E9)' },
+  'Velvet Violet': { color: 'linear-gradient(135deg,#A78BFA,#8B5CF6)' },
+  'Spirit Cyan': { color: 'linear-gradient(135deg,#22D3EE,#06B6D4)' },
+  'Ember Orange': { color: 'linear-gradient(135deg,#FB923C,#EF4444)' },
+  'Balance Green': { color: 'linear-gradient(135deg,#34D399,#10B981)' },
+  'Pulse Pink': { color: 'linear-gradient(135deg,#F472B6,#EC4899)' }
+};
+
+function feedMsg(e) {
+  if (e.type === 'challenge') return `completed "${e.data.title}" and gained +${e.data.vyve} vyve`;
+  if (e.type === 'levelup') return `reached Level ${e.data.level}`;
+  if (e.type === 'badge') return `earned the "${e.data.badge}" badge`;
+  if (e.type === 'joined') return 'just joined AuraVyve';
+  if (e.type === 'friends') return `is now connected with ${e.data.with}`;
+  return '';
+}
+
+// â”€â”€ Events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function bindEvents() {
+  document.getElementById('btn-checkin')?.addEventListener('click', openCheckIn);
+
+  // Challenge selection
+  let pickedChallenges = [];
+  document.querySelectorAll('[data-pick]').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.pick;
+      if (pickedChallenges.includes(id)) {
+        pickedChallenges = pickedChallenges.filter(x => x !== id);
+        card.style.background = '';
+        card.style.borderColor = '';
+      } else if (pickedChallenges.length < 3) {
+        pickedChallenges.push(id);
+        card.style.background = 'rgba(139,92,246,.18)';
+        card.style.borderColor = 'rgba(139,92,246,.5)';
+      }
+      const btn = document.getElementById('btn-lock-challenges');
+      const lbl = document.getElementById('ch-count-label');
+      if (btn) { btn.disabled = pickedChallenges.length === 0; btn.style.opacity = pickedChallenges.length > 0 ? '1' : '.4'; }
+      if (lbl) lbl.textContent = pickedChallenges.length + ' selected';
+    });
+  });
+
+  document.getElementById('btn-lock-challenges')?.addEventListener('click', async () => {
+    if (pickedChallenges.length === 0) return;
+    const data = await api('/api/challenges/select', 'POST', { username: me.username, challengeIds: pickedChallenges });
+    if (data.error) { toast(data.error); return; }
+    me.selectedChallenges = pickedChallenges;
+    me.challengesSelectedDate = new Date().toISOString().split('T')[0];
+    toast('Challenges locked in');
+    render();
+  });
+
+  document.getElementById('btn-logout')?.addEventListener('click', () => {
+    localStorage.removeItem('aurascore_user');
+    localStorage.removeItem('aurascore_pass');
+    me = null;
+    document.getElementById('auth-screen').classList.add('visible');
+    document.getElementById('main-app').style.display = 'none';
+  });
+
+  document.querySelectorAll('[data-ch]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.ch;
+      const data = await api('/api/challenge/complete', 'POST', { username: me.username, challengeId: id });
+      if (data.error) { toast(data.error); return; }
+      me = data.user;
+      completedToday.push(id);
+      toast('+' + data.auraEarned + ' vyve');
+      await refreshLeaderboard();
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-lbt]').forEach(btn => {
+    btn.addEventListener('click', () => { lbTab = btn.dataset.lbt; render(); });
+  });
+
+  document.getElementById('btn-copy-score')?.addEventListener('click', async () => {
+    const score = calcScore(me.traits);
+    const vyve = getAura(score);
+    const text = `My AuraVyve: ${score} \u2014 ${vyve.name}\nLevel ${me.level} | ${me.streak} day streak\nConfidence: ${me.traits.confidence} | Style: ${me.traits.style} | Discipline: ${me.traits.discipline} | Social: ${me.traits.social}\nauravyve.app`;
+    try {
+    if (navigator.clipboard && location.protocol === 'https:') {
+      navigator.clipboard.writeText(text).then(() => toast('Score copied'));
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('Score copied');
+    }
+  } catch(e) { toast('Score copied'); }
+    await api('/api/badge/award', 'POST', { username: me.username, badgeId: 'first-share' });
+  });
+
+  document.getElementById('btn-search')?.addEventListener('click', doSearch);
+  document.getElementById('friend-search')?.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  document.querySelectorAll('[data-accept]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await api('/api/friends/accept', 'POST', { username: me.username, from: btn.dataset.accept });
+      await refreshMe(); toast('Friend added'); render();
+    });
+  });
+
+  document.querySelectorAll('[data-decline]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await api('/api/friends/decline', 'POST', { username: me.username, from: btn.dataset.decline });
+      await refreshMe(); render();
+    });
+  });
+}
+
+async function doSearch() {
+  const q = document.getElementById('friend-search')?.value.trim();
+  if (!q) return;
+  const data = await api(`/api/search?q=${encodeURIComponent(q)}`);
+  const el = document.getElementById('search-results');
+  if (!el) return;
+  if (!data.results?.length) { el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0">No users found</div>'; return; }
+  el.innerHTML = data.results.filter(u => u.username !== me.username).map(u => `
+    <div class="result-row">
+      <div><div class="result-name">${u.username}</div><div class="result-sub">${getAura(u.score).name} · Lv ${u.level}</div></div>
+      <button class="btn-add" data-add="${u.username}">Add</button>
+    </div>`).join('');
+  el.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const d = await api('/api/friends/request', 'POST', { from: me.username, to: btn.dataset.add });
+      if (d.error) toast(d.error);
+      else { btn.textContent = 'Sent'; btn.disabled = true; toast('Request sent'); }
+    });
+  });
+}
+
+// â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    activeTab = btn.dataset.tab;
+    if (activeTab === 'community') { setTimeout(() => loadLeaderboard(_lbTab), 50);
+      const fd = await api(`/api/feed?username=${encodeURIComponent(me.username)}`);
+      feedData = fd.feed || [];
+    }
+    if (activeTab === 'collection') {
+      const col = await api(`/api/collection?username=${encodeURIComponent(me.username)}`);
+      collectionData = col;
+    }
+    if (activeTab === 'history') {
+      const hist = await api(`/api/history?username=${encodeURIComponent(me.username)}`);
+      historyData = hist;
+      patternInsights = hist.patternInsights;
+    }
+    render();
+  });
+});
+
+// â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function refreshMe() {
+  const data = await api(`/api/me?username=${encodeURIComponent(me.username)}`);
+  if (!data.error) { me = data.user; challenges = data.challenges || []; completedToday = data.challengesCompleted || []; }
+}
+
+async function refreshLeaderboard() {
+  const data = await api(`/api/leaderboard?username=${encodeURIComponent(me.username)}`);
+  leaderboard = { global: data.global || [], friends: data.friends || [] };
+}
+
+async function loadUser(username, password) {
+  const data = await api('/api/login', 'POST', { username, password });
+  if (data.error) return data.error;
+  me = data.user;
+  const meData = await api(`/api/me?username=${encodeURIComponent(username)}`);
+  if (!meData.error) {
+    me = meData.user;
+    challenges = meData.challenges || [];
+    completedToday = meData.challengesCompleted || [];
+    checkInQuestions = meData.checkInQuestions || [];
+    weeklyStory = meData.weeklyStory || null;
+    archetype = meData.archetype || null;
+    insight = meData.insight || null;
+    currentEvent = meData.currentEvent || null;
+    retentionMsg = meData.retentionMsg || null;
+  }
+  await refreshLeaderboard();
+  document.getElementById('auth-screen').classList.remove('visible');
+  document.getElementById('main-app').style.display = 'flex';
+  render();
+  return null;
+}
+
+document.getElementById('btn-register').addEventListener('click', async () => {
+  const u = document.getElementById('reg-user').value.trim();
+  const p = document.getElementById('reg-pass').value;
+  const err = document.getElementById('auth-error');
+  err.textContent = '';
+  if (!u || !p) { err.textContent = 'Fill in all fields'; return; }
+  const data = await api('/api/register', 'POST', { username: u, password: p });
+  if (data.error) { err.textContent = data.error; return; }
+  localStorage.setItem('aurascore_user', u);
+  localStorage.setItem('aurascore_pass', p);
+  const e = await loadUser(u, p);
+  if (e) err.textContent = e;
+});
+
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const err = document.getElementById('auth-error2');
+  err.textContent = '';
+  if (!u || !p) { err.textContent = 'Fill in all fields'; return; }
+  const e = await loadUser(u, p);
+  if (e) { err.textContent = e; return; }
+  localStorage.setItem('aurascore_user', u);
+  localStorage.setItem('aurascore_pass', p);
+});
+
+document.getElementById('show-login').addEventListener('click', () => {
+  document.getElementById('reg-panel').style.display = 'none';
+  document.getElementById('login-panel').style.display = 'flex';
+  document.getElementById('auth-error').textContent = '';
+});
+document.getElementById('show-register').addEventListener('click', () => {
+  document.getElementById('login-panel').style.display = 'none';
+  document.getElementById('reg-panel').style.display = 'flex';
+  document.getElementById('auth-error2').textContent = '';
+});
+
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.innerHTML = show
+    ? '<svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+
+document.addEventListener('click', function(e) {
+  var row = e.target.closest('[data-lb-user]');
+  if (row) window.showProfile(row.getAttribute('data-lb-user'));
+});
+
+  const savedUser = localStorage.getItem('aurascore_user');
+  const savedPass = localStorage.getItem('aurascore_pass');
+  if (savedUser && savedPass) {
+    const e = await loadUser(savedUser, savedPass);
+    if (e) {
+      localStorage.removeItem('aurascore_user');
+      localStorage.removeItem('aurascore_pass');
+      // Show landing for new visitors, auth for returning
+      document.getElementById('landing-screen').style.display = 'flex';
+    }
+  } else {
+    document.getElementById('landing-screen').style.display = 'flex';
+  }
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+
+// â”€â”€ Onboarding â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const OB_SLIDES = [
+  { orb: 'linear-gradient(135deg,#8B5CF6,#38BDF8)', title: 'Your vyve changes daily.', body: 'Track your vibe through color, mood, and energy. Check in in under 20 seconds.', cta: 'Next' },
+  { orb: 'linear-gradient(135deg,#FACC15,#FB923C)', title: 'Score your energy.', body: 'Get vyve insights based on how you feel, think, and connect. Watch your traits evolve.', cta: 'Next' },
+  { orb: 'linear-gradient(135deg,#F472B6,#8B5CF6)', title: 'Share your result.', body: 'Turn your vyve into a card worth posting. Build streaks, unlock archetypes, discover rare auras.', cta: 'Get Started' }
+];
+let obStep = 0;
+
+function renderObSlide() {
+  const s = OB_SLIDES[obStep];
+  const dots = OB_SLIDES.map((_, i) => `<div style="width:${i===obStep?24:8}px;height:8px;border-radius:4px;background:${i===obStep?'var(--violet)':'rgba(255,255,255,.15)'};transition:width .3s"></div>`).join('');
+  document.getElementById('ob-slides').innerHTML = `
+    <div style="text-align:center;width:100%;max-width:360px">
+      <div style="width:120px;height:120px;border-radius:50%;background:${s.orb};box-shadow:0 0 80px rgba(139,92,246,.4);margin:0 auto 32px;animation:orbFloat 4s ease-in-out infinite"></div>
+      <h2 style="font-family:Sora,sans-serif;font-size:26px;font-weight:800;line-height:1.2;margin-bottom:14px">${s.title}</h2>
+      <p style="font-size:15px;color:var(--text-2);line-height:1.6;margin-bottom:36px">${s.body}</p>
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:32px">${dots}</div>
+      <button class="btn-primary" id="btn-ob-next">${s.cta}</button>
+      ${obStep < OB_SLIDES.length - 1 ? `<div style="text-align:center;margin-top:16px"><span style="font-size:13px;color:var(--muted);cursor:pointer" id="btn-ob-skip">Skip</span></div>` : ''}
+    </div>`;
+  document.getElementById('btn-ob-next').addEventListener('click', () => {
+    obStep++;
+    if (obStep >= OB_SLIDES.length) finishOnboarding();
+    else renderObSlide();
+  });
+  document.getElementById('btn-ob-skip')?.addEventListener('click', finishOnboarding);
+}
+
+function showOnboarding() {
+  document.getElementById('landing-screen').style.display = 'none';
+  document.getElementById('onboarding-screen').style.display = 'flex';
+  obStep = 0;
+  renderObSlide();
+}
+
+function skipToAuth() {
+  document.getElementById('landing-screen').style.display = 'none';
+  document.getElementById('onboarding-screen').style.display = 'none';
+  document.getElementById('login-panel').style.display = 'flex';
+  document.getElementById('reg-panel').style.display = 'none';
+  document.getElementById('auth-screen').classList.add('visible');
+}
+
+function finishOnboarding() {
+  localStorage.setItem('aurascore_onboarded', '1');
+  document.getElementById('onboarding-screen').style.display = 'none';
+  document.getElementById('auth-screen').classList.add('visible');
+}
+
+async function loadLeaderboard(tab) {
+  const lbList = document.getElementById('lb-list');
+  if (!lbList) return;
+  const data = await api('/api/leaderboard?username=' + encodeURIComponent(me.username));
+  const list = tab === 'friends' ? (data.friends||[]) : (data.global||[]);
+  if (list.length === 0) { lbList.innerHTML = '<div style="color:var(--muted);font-size:13px">No rankings yet</div>'; return; }
+  lbList.innerHTML = list.map((u,i) => {
+    const fs2 = getAura(u.score);
+    return `<div style="display:flex;align-items:center;gap:12px;background:${u.username===me.username?'rgba(139,92,246,.1)':'rgba(255,255,255,.03)'};border:1px solid ${u.username===me.username?'rgba(139,92,246,.3)':'var(--border)'};border-radius:14px;padding:11px 14px;margin-bottom:8px" onclick="showProfile('"+(u.username)+"')">
+      <div style="font-family:Sora,sans-serif;font-size:14px;font-weight:800;color:${i<3?'var(--gold)':'var(--muted)'};width:22px;text-align:center">${i+1}</div>
+      <div style="width:8px;height:8px;border-radius:50%;background:${fs2.color};flex-shrink:0"></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">${u.username===me.username?'You':u.username}</div><div style="font-size:11px;background:${fs2.color};-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:600">${fs2.name} · ${u.streak}d</div></div>
+      <div style="font-family:Sora,sans-serif;font-size:20px;font-weight:900;background:${fs2.color};-webkit-background-clip:text;-webkit-text-fill-color:transparent">${u.score}</div>
+    </div>`;
+  }).join('');
+}
+
+let _lbTab = 'global';
+function switchLb(tab) {
+  _lbTab = tab;
+  const gb = document.getElementById('lb-global-btn');
+  const fb = document.getElementById('lb-friends-btn');
+  if(gb) { gb.style.background = tab==='global'?'rgba(139,92,246,.15)':'rgba(255,255,255,.04)'; gb.style.borderColor = tab==='global'?'rgba(139,92,246,.5)':'var(--border)'; gb.style.color = tab==='global'?'var(--violet)':'var(--muted)'; }
+  if(fb) { fb.style.background = tab==='friends'?'rgba(139,92,246,.15)':'rgba(255,255,255,.04)'; fb.style.borderColor = tab==='friends'?'rgba(139,92,246,.5)':'var(--border)'; fb.style.color = tab==='friends'?'var(--violet)':'var(--muted)'; }
+  loadLeaderboard(tab);
+}
+
+
+
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var content = document.getElementById('content');
+    var landing = document.getElementById('landing-screen');
+    var auth = document.getElementById('auth-screen');
+    var main = document.getElementById('main-app');
+    // If nothing visible, show landing
+    if (landing && landing.style.display === 'none' && 
+        auth && !auth.classList.contains('visible') &&
+        main && main.style.display !== 'flex') {
+      landing.style.display = 'flex';
+    }
+  }, 500);
+});
+
+
+
+function addLbClickHandlers() {
+  document.querySelectorAll('[data-lb-user]').forEach(function(el) {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', function() {
+      window.showProfile(el.getAttribute('data-lb-user'));
+    });
+  });
+}
+
+window.showProfile = async function(username) {
+  var d = await fetch('/api/me?username=' + encodeURIComponent(username)).then(function(r){return r.json();});
+  if (d.error) return;
+  var traits = d.traits || {confidence:50,style:50,discipline:50,social:50};
+  var score = Math.round((traits.confidence+traits.style+traits.discipline+traits.social)/4);
+  var aura = {name:'Spirit Cyan',color:'linear-gradient(135deg,#22D3EE,#06B6D4)',glow:'rgba(34,211,238,0.6)'};
+  if (typeof AURA_NAMES !== 'undefined') { aura = AURA_NAMES.find(function(a){return score>=a.minScore;}) || AURA_NAMES[AURA_NAMES.length-1]; }
+  var existing = document.getElementById('profile-sheet-modal');
+  if (existing) existing.remove();
+  var modal = document.createElement('div');
+  modal.id = 'profile-sheet-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(9,9,13,0.88);backdrop-filter:blur(16px);z-index:300;display:flex;align-items:flex-end;justify-content:center;padding:0';
+  modal.innerHTML =
+    '<div style="width:100%;max-width:480px;background:#0d1728;border:1px solid rgba(255,255,255,0.1);border-radius:24px 24px 0 0;padding:28px 24px 40px">' +
+    '<div style="width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 20px"></div>' +
+    '<div style="width:80px;height:80px;border-radius:50%;background:'+aura.color+';box-shadow:0 0 40px '+aura.glow+';margin:0 auto 12px"></div>' +
+    '<div style="font-family:Sora,sans-serif;font-size:20px;font-weight:800;text-align:center;margin-bottom:4px">'+username+'</div>' +
+    '<div style="font-size:13px;font-weight:700;text-align:center;background:'+aura.color+';-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px">'+aura.name+'</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">' +
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center"><div style="font-family:Sora,sans-serif;font-size:22px;font-weight:900;background:'+aura.color+';-webkit-background-clip:text;-webkit-text-fill-color:transparent">'+score+'</div><div style="font-size:10px;color:#7C859B;margin-top:2px">Score</div></div>' +
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center"><div style="font-family:Sora,sans-serif;font-size:22px;font-weight:900">Lv '+(d.level||1)+'</div><div style="font-size:10px;color:#7C859B;margin-top:2px">Level</div></div>' +
+    '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;text-align:center"><div style="font-family:Sora,sans-serif;font-size:22px;font-weight:900">'+(d.streak||0)+'d</div><div style="font-size:10px;color:#7C859B;margin-top:2px">Streak</div></div>' +
+    '</div>' +
+    ['confidence','style','discipline','social'].map(function(k){return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:#7C859B">'+k.charAt(0).toUpperCase()+k.slice(1)+'</span><span style="font-weight:700">'+(traits[k]||50)+'</span></div><div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="width:'+(traits[k]||50)+'%;height:100%;background:linear-gradient(90deg,#8B5CF6,#38BDF8);border-radius:3px"></div></div></div>';}).join('') +
+    '<button id="close-profile-btn" style="width:100%;margin-top:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;color:#7C859B;font-size:14px;font-family:Inter,sans-serif;cursor:pointer">Close</button>' +
+    '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){if(e.target===modal) modal.remove();});
+  document.getElementById('close-profile-btn').addEventListener('click', function(){modal.remove();});
+};
+
+(function(){
+var cv=document.getElementById("lava");
+if(!cv)return;
+var ctx=cv.getContext("2d"),W,H,t=0;
+var blobs=[
+{x:.2,y:.3,vx:.0004,vy:.0003,s:.38,r:139,g:92,b:246},
+{x:.7,y:.6,vx:-.0003,vy:.0004,s:.32,r:56,g:189,b:248},
+{x:.5,y:.8,vx:.0005,vy:-.0003,s:.30,r:244,g:114,b:182},
+{x:.8,y:.2,vx:-.0004,vy:-.0003,s:.26,r:139,g:92,b:246},
+{x:.3,y:.7,vx:.0003,vy:.0005,s:.24,r:56,g:189,b:248}
+];
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+function draw(){
+t++;
+ctx.fillStyle="#09090D";
+ctx.fillRect(0,0,W,H);
+for(var i=0;i<blobs.length;i++){
+var b=blobs[i];
+b.x+=b.vx;b.y+=b.vy;
+if(b.x<-.1||b.x>1.1)b.vx*=-1;
+if(b.y<-.1||b.y>1.1)b.vy*=-1;
+var px=b.x*W,py=b.y*H;
+var rad=b.s*Math.min(W,H);
+var p=0.85+0.15*Math.sin(t*.025+i);
+var gr=ctx.createRadialGradient(px,py,0,px,py,rad*p);
+gr.addColorStop(0,"rgba("+b.r+","+b.g+","+b.b+",0.5)");
+gr.addColorStop(.6,"rgba("+b.r+","+b.g+","+b.b+",0.15)");
+gr.addColorStop(1,"rgba("+b.r+","+b.g+","+b.b+",0)");
+ctx.fillStyle=gr;
+ctx.beginPath();ctx.arc(px,py,rad*p,0,Math.PI*2);ctx.fill();
+}
+requestAnimationFrame(draw);
+}
+window.addEventListener("resize",resize);
+resize();draw();
+})();
+
+// PWA install prompt
+var deferredPrompt = null;
+var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+var isInStandaloneMode = ('standalone' in window.navigator) && window.navigator.standalone;
+var androidInstalled = window.matchMedia('(display-mode: standalone)').matches;
+
+if (!isInStandaloneMode && !androidInstalled) {
+  if (isIOS) {
+    // Show iOS banner after 3 seconds
+    setTimeout(function() {
+      var b = document.getElementById('ios-banner');
+      if (b && !localStorage.getItem('pwa-dismissed')) b.style.display = 'flex';
+    }, 3000);
+  } else {
+    // Android/Chrome - listen for beforeinstallprompt
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      var b = document.getElementById('pwa-banner');
+      if (b && !localStorage.getItem('pwa-dismissed')) b.style.display = 'flex';
+    });
+  }
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target.id === 'pwa-install-btn' && deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function() {
+      deferredPrompt = null;
+      var b = document.getElementById('pwa-banner');
+      if (b) b.style.display = 'none';
+    });
+  }
+  if (e.target.id === 'pwa-dismiss') {
+    var b = document.getElementById('pwa-banner');
+    if (b) b.style.display = 'none';
+    localStorage.setItem('pwa-dismissed', '1');
+  }
+  if (e.target.id === 'ios-dismiss') {
+    var b = document.getElementById('ios-banner');
+    if (b) b.style.display = 'none';
+    localStorage.setItem('pwa-dismissed', '1');
+  }
+});
+
+</script>
+
+<div id="pwa-banner">
+  <div class="pwa-text">
+    <div class="pwa-title">Install AuraVyve</div>
+    <div class="pwa-sub">Add to home screen for the full experience</div>
+  </div>
+  <button class="pwa-btn" id="pwa-install-btn">Install</button>
+  <button class="pwa-close" id="pwa-dismiss">x</button>
+</div>
+<div id="ios-banner">
+  <div class="ios-title">Install AuraVyve</div>
+  <div class="ios-steps">
+    1. Tap the Share button <strong style="color:#4a90d9">&#9633; Share</strong> at the bottom of your browser<br>
+    2. Scroll down and tap <strong style="color:#4a90d9">Add to Home Screen</strong><br>
+    3. Tap <strong style="color:#4a90d9">Add</strong> to install
+  </div>
+  <button class="ios-close" id="ios-dismiss">Got it</button>
+</div>
+
+</body>
+</html>
+
+
+
+
+
+

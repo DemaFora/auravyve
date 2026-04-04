@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuraScore — How It Works</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07111f;
+      --card: #0d1728;
+      --accent: #7c5cff;
+      --accent-2: #27d7ff;
+      --text: #f4f7fb;
+      --muted: #98a8c1;
+      --line: rgba(255,255,255,.08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, Arial, sans-serif; background: var(--bg); color: var(--text); }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 40px 20px 60px; }
+    .back { display: inline-block; color: var(--accent-2); font-size: 14px; font-weight: 700; text-decoration: none; margin-bottom: 32px; }
+    h1 { font-size: 42px; font-weight: 800; letter-spacing: -.04em; margin: 0 0 10px; }
+    h1 span { color: var(--accent-2); }
+    .tagline { font-size: 18px; color: var(--muted); margin-bottom: 48px; }
+    h2 { font-size: 22px; font-weight: 800; margin: 0 0 14px; }
+    .section { border: 1px solid var(--line); border-radius: 18px; padding: 24px; margin-bottom: 18px; background: linear-gradient(180deg, rgba(16,29,51,.96), rgba(13,23,40,.98)); }
+    .step-num { display: inline-block; width: 32px; height: 32px; border-radius: 10px; background: rgba(124,92,255,.18); color: #c9beff; font-size: 14px; font-weight: 800; text-align: center; line-height: 32px; margin-right: 10px; vertical-align: middle; }
+    p { color: var(--muted); font-size: 15px; line-height: 1.75; margin: 10px 0 0; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .pill { padding: 8px 14px; border-radius: 999px; background: rgba(124,92,255,.12); border: 1px solid rgba(124,92,255,.2); color: #c9beff; font-size: 13px; font-weight: 700; }
+    .cta { margin-top: 36px; text-align: center; }
+    .btn { display: inline-block; padding: 14px 36px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), #9d6cff); color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">Back to AuraScore</a>
+    <h1>How <span>AuraScore</span> Works</h1>
+    <div class="tagline">Track your aura. Beat your friends. Level up every day.</div>
+
+    <div class="section">
+      <h2><span class="step-num">1</span> Your Daily Aura Score</h2>
+      <p>Every day you get a score from 0 to 99. Your score is based on 4 traits: Confidence, Style, Discipline, and Social Energy. The higher your score, the stronger your aura. Each trait feeds into your overall number — so working on all four is how you peak.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-num">2</span> The 4 Aura Traits</h2>
+      <div class="pill-row">
+        <div class="pill">Confidence</div>
+        <div class="pill">Style</div>
+        <div class="pill">Discipline</div>
+        <div class="pill">Social Energy</div>
+      </div>
+      <p>Each trait is scored independently. You can be elite in one and mid in another — that's the game. Every challenge you complete shifts your traits. Some boost Confidence, some boost Discipline. Pay attention to what each one rewards.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-num">3</span> Daily Challenges</h2>
+      <p>Every day you get a new Aura Challenge. Complete it and you earn aura points. Skip it and your score stays flat or drops. Challenges are things like: post a clean fit, finish your workout, make one strong social move, or hit a discipline goal. Simple. Real. No fluff.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-num">4</span> Streaks and Momentum</h2>
+      <p>The longer you keep your streak alive, the faster your aura builds. Miss a day and the streak resets. Your trend indicator — Ascending, Surging, or Stalling — shows the direction you're moving in. Momentum is everything. Don't break the chain.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-num">5</span> The League Board</h2>
+      <p>You are always competing. Your score is ranked live against your friends. The league updates daily. Rankings shift based on who's showing up and who's falling off. There's no hiding — either you're putting in the work or you're not.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-num">6</span> Levels</h2>
+      <p>Your level goes up as your total aura accumulates over time. Level 1 is just getting started. Level 99 is untouchable. Your level is permanent — even if your daily score dips, you keep the levels you've earned. This is your long-term status.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="step-num">7</span> Recalculate Aura</h2>
+      <p>Hit Recalculate Aura to get a fresh daily read on your score based on current energy inputs. Use it once per day to check in. It's your honest mirror — not what you wish your aura was, what it actually is right now.</p>
+    </div>
+
+    <div class="cta">
+      <a class="btn" href="/">Go check your score</a>
+    </div>
+  </div>
+</body>
+</html>
