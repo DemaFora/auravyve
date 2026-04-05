@@ -56,12 +56,9 @@ function getClientIp(req) {
 
 
 const PORT = process.env.PORT || 3085;
-// Railway-compatible DB path
-const DB_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || 
-               (process.env.RAILWAY_ENVIRONMENT ? '/tmp' : path.join(__dirname, 'data'));
-const DB_FILE = path.join(DB_DIR, 'db.json');
-try { fs.mkdirSync(DB_DIR, { recursive: true }); } catch(e) { console.error('DB dir error:', e.message); }
-console.log('DB path:', DB_FILE);
+const DB_FILE = process.env.RAILWAY_ENVIRONMENT ? '/tmp/auravyve.json' : path.join(__dirname, 'data', 'db.json');
+if (!process.env.RAILWAY_ENVIRONMENT) { try { require('fs').mkdirSync(path.join(__dirname,'data'),{recursive:true}); } catch(e){} }
+console.log('DB:', DB_FILE);
 
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) return { users: {}, feed: [] };
