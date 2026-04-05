@@ -1,4 +1,7 @@
 'use strict';
+process.on('uncaughtException', (e) => console.error('Uncaught:', e));
+process.on('unhandledRejection', (e) => console.error('Unhandled:', e));
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -53,9 +56,12 @@ function getClientIp(req) {
 
 
 const PORT = process.env.PORT || 3085;
-const DB_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(__dirname, 'data');
+// Railway-compatible DB path
+const DB_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || 
+               (process.env.RAILWAY_ENVIRONMENT ? '/tmp' : path.join(__dirname, 'data'));
 const DB_FILE = path.join(DB_DIR, 'db.json');
-try { require('fs').mkdirSync(DB_DIR, { recursive: true }); } catch(e) {}
+try { fs.mkdirSync(DB_DIR, { recursive: true }); } catch(e) { console.error('DB dir error:', e.message); }
+console.log('DB path:', DB_FILE);
 
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) return { users: {}, feed: [] };
