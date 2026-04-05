@@ -904,4 +904,10 @@ function getAuraName(score) {
 }
 
 const server = http.createServer(async (req, res) => { try { await route(req, res); } catch(e) { console.error(e); if (!res.headersSent) { res.writeHead(500); res.end('Error'); } } });
-server.listen(PORT, '0.0.0.0', () => console.log(`AuraVyve v2 running on http://0.0.0.0:${PORT}`));
+server.listen(PORT, '0.0.0.0', () => {
+  console.log('AuraVyve v2 running on port ' + PORT);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('DB_DIR:', process.env.RAILWAY_VOLUME_MOUNT_PATH || 'local');
+});
+process.on('uncaughtException', function(e) { console.error('Uncaught:', e.message, e.stack); });
+process.on('unhandledRejection', function(r) { console.error('Unhandled:', r); });
