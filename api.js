@@ -62,10 +62,10 @@ if (!process.env.RAILWAY_ENVIRONMENT) { try { require('fs').mkdirSync(path.join(
 console.log('DB:', DB_FILE);
 
 async function loadDB() {
-  return pgDB.await loadDB();
+  return await pgDB.loadDB();
 }
 async function saveDB(db) {
-  return pgDB.await saveDB(db);
+  return await pgDB.saveDB(db);
 }
 
 // ── Challenge data ──────────────────────────────────────────────────────────
