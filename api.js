@@ -61,10 +61,10 @@ const DB_FILE = process.env.RAILWAY_ENVIRONMENT ? '/tmp/auravyve.json' : path.jo
 if (!process.env.RAILWAY_ENVIRONMENT) { try { require('fs').mkdirSync(path.join(__dirname,'data'),{recursive:true}); } catch(e){} }
 console.log('DB:', DB_FILE);
 
-async function loadDB() {
-  return pgDB.loadDB();
+async function await loadDB() {
+  return pgDB.await loadDB();
 }
-async function saveDB(db) {
+async function await saveDB(db) {
   return pgDB.await saveDB(db);
 }
 
