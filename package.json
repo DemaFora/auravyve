@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "bcryptjs": "^3.0.3"
+    "bcryptjs": "^3.0.3",
+    "pg": "^8.20.0"
   },
   "scripts": {
     "start": "node api.js"

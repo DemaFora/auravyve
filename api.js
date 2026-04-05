@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
+const pgDB = require('./db-postgres');
 
 // ── Security utilities ────────────────────────────────────────────────────────
 const JWT_SECRET = process.env.JWT_SECRET || '31d5821953611e42f34ad635f8f1e5e37d021624b370107d0e63fa4a2bdcf4e0';
@@ -60,12 +61,12 @@ const DB_FILE = process.env.RAILWAY_ENVIRONMENT ? '/tmp/auravyve.json' : path.jo
 if (!process.env.RAILWAY_ENVIRONMENT) { try { require('fs').mkdirSync(path.join(__dirname,'data'),{recursive:true}); } catch(e){} }
 console.log('DB:', DB_FILE);
 
-function loadDB() {
-  if (!fs.existsSync(DB_FILE)) return { users: {}, feed: [] };
-  try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); }
-  catch { return { users: {}, feed: [] }; }
+async function loadDB() {
+  return pgDB.loadDB();
 }
-function saveDB(db) { fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2)); }
+async function saveDB(db) {
+  return pgDB.await saveDB(db);
+}
 
 // ── Challenge data ──────────────────────────────────────────────────────────
 // Challenge pool — 7 rotating daily sets, each with 5 challenges across different pillars
@@ -448,7 +449,7 @@ async function route(req, res) {
   const url = new URL(req.url, 'http://localhost');
   const p = url.pathname, method = req.method;
   function json(code, data) { res.writeHead(code, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(data)); }
-  const db = loadDB();
+  const db = await loadDB();
 
   // ── Auth ────────────────────────────────────────────────────────────────
   if (p === '/api/register' && method === 'POST') {
@@ -461,7 +462,7 @@ async function route(req, res) {
     const user = createUser(name, hash);
     db.users[name] = user;
     addFeedEvent(db, 'joined', name, {});
-    saveDB(db);
+    await saveDB(db);
     return json(200, { user: sanitize(user) });
   }
 
@@ -514,7 +515,7 @@ async function route(req, res) {
 
       checkBadges(u, db);
       u.lastActiveDate = today;
-      saveDB(db);
+      await saveDB(db);
     }
 
     if (!u.challengesCompletedToday) u.challengesCompletedToday = [];
@@ -618,7 +619,7 @@ async function route(req, res) {
     const progLevel = getProgressionLevel(u.checkInCount);
     const archetype = progLevel >= 4 ? getArchetype(u.traits) : null;
 
-    saveDB(db);
+    await saveDB(db);
     const patternInsights = getPatternInsights(u.checkInHistory);
     return json(200, {
       user: sanitize(u), score, insight, archetype,
@@ -671,7 +672,7 @@ async function route(req, res) {
     if (!name || !db.users[name]) return json(404, { error: 'Not found' });
     if (!ALL_BADGES[badgeId]) return json(400, { error: 'Unknown badge' });
     const awarded = awardBadge(db.users[name], db, badgeId);
-    saveDB(db);
+    await saveDB(db);
     return json(200, { ok: true, awarded });
   }
 
@@ -702,7 +703,7 @@ async function route(req, res) {
     if (u.streakShields <= 0) return json(400, { error: 'No shields left this month' });
     u.streakShields--;
     u.streak = Math.max(0, u.streak); // preserve streak
-    saveDB(db);
+    await saveDB(db);
     return json(200, { ok: true, shieldsRemaining: u.streakShields });
   }
 
@@ -722,7 +723,7 @@ async function route(req, res) {
     u.selectedChallenges = challengeIds;
     u.challengesSelectedDate = today;
     u.challengesCompletedToday = [];
-    saveDB(db);
+    await saveDB(db);
     return json(200, { ok: true, selected: challengeIds });
   }
 
@@ -750,7 +751,7 @@ async function route(req, res) {
     checkBadges(u, db);
     addFeedEvent(db, 'challenge', name, { title: ch.title, vyve: ch.vyve, score: calcScore(u.traits) });
     if (u.level > calcLevel(u.totalAura - ch.vyve)) addFeedEvent(db, 'levelup', name, { level: u.level });
-    saveDB(db);
+    await saveDB(db);
     return json(200, { user: sanitize(u), score: calcScore(u.traits), auraEarned: ch.vyve });
   }
 
@@ -781,7 +782,7 @@ async function route(req, res) {
     if ((db.users[f].friends || []).includes(t)) return json(400, { error: 'Already friends' });
     if (!db.users[t].friendRequests) db.users[t].friendRequests = [];
     db.users[t].friendRequests.push(f);
-    saveDB(db);
+    await saveDB(db);
     return json(200, { ok: true });
   }
 
@@ -795,7 +796,7 @@ async function route(req, res) {
     if (!db.users[name].friends.includes(f)) db.users[name].friends.push(f);
     if (!db.users[f].friends.includes(name)) db.users[f].friends.push(name);
     addFeedEvent(db, 'friends', name, { with: f });
-    saveDB(db);
+    await saveDB(db);
     return json(200, { ok: true });
   }
 
@@ -804,7 +805,7 @@ async function route(req, res) {
     const name = username?.toLowerCase(), f = from?.toLowerCase();
     if (!name || !db.users[name]) return json(404, { error: 'Not found' });
     db.users[name].friendRequests = (db.users[name].friendRequests || []).filter(x => x !== f);
-    saveDB(db);
+    await saveDB(db);
     return json(200, { ok: true });
   }
 
