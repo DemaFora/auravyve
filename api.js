@@ -53,7 +53,9 @@ function getClientIp(req) {
 
 
 const PORT = process.env.PORT || 3085;
-const DB_FILE = path.join(__dirname, 'db.json');
+const DB_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(__dirname, 'data');
+const DB_FILE = path.join(DB_DIR, 'db.json');
+try { require('fs').mkdirSync(DB_DIR, { recursive: true }); } catch(e) {}
 
 function loadDB() {
   if (!fs.existsSync(DB_FILE)) return { users: {}, feed: [] };
