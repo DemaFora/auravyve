@@ -802,7 +802,7 @@ function renderCard() {
               <div class="sc-trait-val">${me.traits[k]}</div>
             </div>`).join('')}
         </div>
-        <div class="sc-footer">auravyve.app</div>
+        <div class="sc-footer">auravyve-production.up.railway.app</div>
       </div>
       <div class="sc-streak"><strong>${me.streak} day streak</strong> &middot; Longest: ${me.longestStreak || me.streak}</div>
       <div class="share-hint">Screenshot this card and post your vyve</div>
@@ -1079,7 +1079,7 @@ function bindEvents() {
   document.getElementById('btn-copy-score')?.addEventListener('click', async () => {
     const score = calcScore(me.traits);
     const vyve = getAura(score);
-    const text = `My AuraVyve: ${score} \u2014 ${vyve.name}\nLevel ${me.level} | ${me.streak} day streak\nConfidence: ${me.traits.confidence} | Style: ${me.traits.style} | Discipline: ${me.traits.discipline} | Social: ${me.traits.social}\nauravyve.app`;
+    const text = `My AuraVyve: ${score} \u2014 ${vyve.name}\nLevel ${me.level} | ${me.streak} day streak\nConfidence: ${me.traits.confidence} | Style: ${me.traits.style} | Discipline: ${me.traits.discipline} | Social: ${me.traits.social}\nauravyve-production.up.railway.app`;
     try {
     if (navigator.clipboard && location.protocol === 'https:') {
       navigator.clipboard.writeText(text).then(() => toast('Score copied'));
